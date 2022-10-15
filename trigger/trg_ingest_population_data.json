@@ -1,0 +1,17 @@
+{
+	"name": "trg_ingest_population_data",
+	"properties": {
+		"annotations": [],
+		"runtimeState": "Stopped",
+		"pipelines": [],
+		"type": "BlobEventsTrigger",
+		"typeProperties": {
+			"blobPathBeginsWith": "/population/blobs/population_by_age",
+			"ignoreEmptyBlobs": true,
+			"scope": "/subscriptions/248d4657-ec71-4f24-8f5f-6faed8b22747/resourceGroups/covid_reporting_rg/providers/Microsoft.Storage/storageAccounts/covidreportingstorage14",
+			"events": [
+				"Microsoft.Storage.BlobCreated"
+			]
+		}
+	}
+}

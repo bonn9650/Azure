@@ -19,6 +19,10 @@
 			"type": "string",
 			"defaultValue": "https://covidreportingdatalake14.dfs.core.windows.net/"
 		},
+		"ls_http_opendata_europa_eu_properties_typeProperties_url": {
+			"type": "string",
+			"defaultValue": "https://github.com"
+		},
 		"trg_ingest_population_data_properties_typeProperties_scope": {
 			"type": "string",
 			"defaultValue": "/subscriptions/248d4657-ec71-4f24-8f5f-6faed8b22747/resourceGroups/covid_reporting_rg/providers/Microsoft.Storage/storageAccounts/covidreportingstorage14"
@@ -58,6 +62,9 @@
 					},
 					"ls_adls_covidreporting_dl_properties_typeProperties_url": {
 						"value": "[parameters('ls_adls_covidreporting_dl_properties_typeProperties_url')]"
+					},
+					"ls_http_opendata_europa_eu_properties_typeProperties_url": {
+						"value": "[parameters('ls_http_opendata_europa_eu_properties_typeProperties_url')]"
 					},
 					"trg_ingest_population_data_properties_typeProperties_scope": {
 						"value": "[parameters('trg_ingest_population_data_properties_typeProperties_scope')]"

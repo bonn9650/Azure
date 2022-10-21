@@ -553,17 +553,10 @@
 					"recurrence": {
 						"frequency": "Day",
 						"interval": 1,
-						"startTime": "2022-10-20T10:29:00",
+						"startTime": "2022-10-20T22:32:00",
 						"endTime": "2022-10-22T02:17:00",
 						"timeZone": "Eastern Standard Time",
-						"schedule": {
-							"minutes": [
-								25
-							],
-							"hours": [
-								10
-							]
-						}
+						"schedule": {}
 					}
 				}
 			},

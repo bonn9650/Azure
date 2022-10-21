@@ -1,0 +1,26 @@
+{
+	"name": "trg_ingest_hospital_admissions_data",
+	"properties": {
+		"annotations": [],
+		"runtimeState": "Started",
+		"pipelines": [],
+		"type": "ScheduleTrigger",
+		"typeProperties": {
+			"recurrence": {
+				"frequency": "Day",
+				"interval": 1,
+				"startTime": "2022-10-20T00:17:00",
+				"endTime": "2022-10-22T02:17:00",
+				"timeZone": "Eastern Standard Time",
+				"schedule": {
+					"minutes": [
+						25
+					],
+					"hours": [
+						10
+					]
+				}
+			}
+		}
+	}
+}

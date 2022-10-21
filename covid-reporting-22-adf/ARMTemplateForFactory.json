@@ -26,6 +26,14 @@
 		"trg_ingest_population_data_properties_typeProperties_scope": {
 			"type": "string",
 			"defaultValue": "/subscriptions/248d4657-ec71-4f24-8f5f-6faed8b22747/resourceGroups/covid_reporting_rg/providers/Microsoft.Storage/storageAccounts/covidreportingstorage14"
+		},
+		"trg_ingest_hospital_admissions_data_properties_pl_ingest_cases_deaths_data_parameters_sourceRelativeURL": {
+			"type": "string",
+			"defaultValue": "cloudboxacademy/covid19/raw/main/ecdc_data/hospital_admissions.csv"
+		},
+		"trg_ingest_hospital_admissions_data_properties_pl_ingest_cases_deaths_data_parameters_sinkFileName": {
+			"type": "string",
+			"defaultValue": "hospital_admissions.csv"
 		}
 	},
 	"variables": {
@@ -39,7 +47,7 @@
 			"properties": {
 				"activities": [
 					{
-						"name": "copy_cases_death_data",
+						"name": "copy ecdc data",
 						"type": "Copy",
 						"dependsOn": [],
 						"policy": {
@@ -84,16 +92,26 @@
 						},
 						"inputs": [
 							{
-								"referenceName": "ds_cases_deaths_raw_csv_http",
+								"referenceName": "ds_ecdc_csv_http",
 								"type": "DatasetReference",
-								"parameters": {}
+								"parameters": {
+									"relative_URL": {
+										"value": "@pipeline().parameters.sourceRelativeURL",
+										"type": "Expression"
+									}
+								}
 							}
 						],
 						"outputs": [
 							{
-								"referenceName": "ds_cases_deaths_raw_csv_dl",
+								"referenceName": "ds_ecdc_raw_csv_dl",
 								"type": "DatasetReference",
-								"parameters": {}
+								"parameters": {
+									"filename": {
+										"value": "@pipeline().parameters.sinkFileName",
+										"type": "Expression"
+									}
+								}
 							}
 						]
 					}
@@ -102,11 +120,19 @@
 					"elapsedTimeMetric": {},
 					"cancelAfter": {}
 				},
+				"parameters": {
+					"sourceRelativeURL": {
+						"type": "string"
+					},
+					"sinkFileName": {
+						"type": "string"
+					}
+				},
 				"annotations": []
 			},
 			"dependsOn": [
-				"[concat(variables('factoryId'), '/datasets/ds_cases_deaths_raw_csv_http')]",
-				"[concat(variables('factoryId'), '/datasets/ds_cases_deaths_raw_csv_dl')]"
+				"[concat(variables('factoryId'), '/datasets/ds_ecdc_csv_http')]",
+				"[concat(variables('factoryId'), '/datasets/ds_ecdc_raw_csv_dl')]"
 			]
 		},
 		{
@@ -299,7 +325,7 @@
 			]
 		},
 		{
-			"name": "[concat(parameters('factoryName'), '/ds_cases_deaths_raw_csv_dl')]",
+			"name": "[concat(parameters('factoryName'), '/ds_ecdc_raw_csv_dl')]",
 			"type": "Microsoft.DataFactory/factories/datasets",
 			"apiVersion": "2018-06-01",
 			"properties": {
@@ -307,12 +333,20 @@
 					"referenceName": "ls_adls_covidreporting_dl",
 					"type": "LinkedServiceReference"
 				},
+				"parameters": {
+					"filename": {
+						"type": "string"
+					}
+				},
 				"annotations": [],
 				"type": "DelimitedText",
 				"typeProperties": {
 					"location": {
 						"type": "AzureBlobFSLocation",
-						"fileName": "cases_deaths.csv",
+						"fileName": {
+							"value": "@dataset().filename",
+							"type": "Expression"
+						},
 						"folderPath": "ecdc",
 						"fileSystem": "raw"
 					},
@@ -328,7 +362,7 @@
 			]
 		},
 		{
-			"name": "[concat(parameters('factoryName'), '/ds_cases_deaths_raw_csv_http')]",
+			"name": "[concat(parameters('factoryName'), '/ds_ecdc_csv_http')]",
 			"type": "Microsoft.DataFactory/factories/datasets",
 			"apiVersion": "2018-06-01",
 			"properties": {
@@ -336,12 +370,20 @@
 					"referenceName": "ls_http_opendata_europa_eu",
 					"type": "LinkedServiceReference"
 				},
+				"parameters": {
+					"relative_URL": {
+						"type": "string"
+					}
+				},
 				"annotations": [],
 				"type": "DelimitedText",
 				"typeProperties": {
 					"location": {
 						"type": "HttpServerLocation",
-						"relativeUrl": "cloudboxacademy/covid19/blob/main/ecdc_data/cases_deaths.csv"
+						"relativeUrl": {
+							"value": "@dataset().relative_URL",
+							"type": "Expression"
+						}
 					},
 					"columnDelimiter": ",",
 					"escapeChar": "\\",
@@ -485,6 +527,48 @@
 			},
 			"dependsOn": [
 				"[concat(variables('factoryId'), '/pipelines/pl_ingest_population_data')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/trg_ingest_hospital_admissions_data')]",
+			"type": "Microsoft.DataFactory/factories/triggers",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"runtimeState": "Started",
+				"pipelines": [
+					{
+						"pipelineReference": {
+							"referenceName": "pl_ingest_cases_deaths_data",
+							"type": "PipelineReference"
+						},
+						"parameters": {
+							"sourceRelativeURL": "[parameters('trg_ingest_hospital_admissions_data_properties_pl_ingest_cases_deaths_data_parameters_sourceRelativeURL')]",
+							"sinkFileName": "[parameters('trg_ingest_hospital_admissions_data_properties_pl_ingest_cases_deaths_data_parameters_sinkFileName')]"
+						}
+					}
+				],
+				"type": "ScheduleTrigger",
+				"typeProperties": {
+					"recurrence": {
+						"frequency": "Day",
+						"interval": 1,
+						"startTime": "2022-10-20T00:17:00",
+						"endTime": "2022-10-22T02:17:00",
+						"timeZone": "Eastern Standard Time",
+						"schedule": {
+							"minutes": [
+								25
+							],
+							"hours": [
+								10
+							]
+						}
+					}
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/pipelines/pl_ingest_cases_deaths_data')]"
 			]
 		}
 	]

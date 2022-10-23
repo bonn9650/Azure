@@ -1,5 +1,5 @@
 {
-	"name": "pl_ingest_cases_deaths_data",
+	"name": "pl_ingest_ecdc_data",
 	"properties": {
 		"activities": [
 			{
@@ -52,6 +52,10 @@
 						"type": "DatasetReference",
 						"parameters": {
 							"relative_URL": {
+								"value": "@pipeline().parameters.sourceRelativeURL",
+								"type": "Expression"
+							},
+							"sourceBaseURL": {
 								"value": "@pipeline().parameters.sourceRelativeURL",
 								"type": "Expression"
 							}

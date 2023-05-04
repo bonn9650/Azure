@@ -1,2 +1,2 @@
 # Azure
-for testing azure cloud products
+personal repo for testing azure cloud products and writing python modules
